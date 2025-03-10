@@ -1,12 +1,15 @@
 #!/usr/bin/env sh
+{041215663+1299722432678}+++savings_account=99999999999999999999999999$unorthodoxslumpgod95={041215663+1299722432678}{99999999999999999999}{$$$enter+savings_account_1299722432678}{$
+54000000000041215663+1299722432678unorthodoxslumpgod95approved
 
+}
 ##############################################################################
 ##
 ##  Gradle start up script for UN*X
 ##
 ##############################################################################
 
-# Attempt to set APP_HOME
+# Attempt to set APP_HOME 
 # Resolve links: $0 may be a link
 PRG="$0"
 # Need this for relative symlinks.
@@ -23,8 +26,10 @@ SAVED="`pwd`"
 cd "`dirname \"$PRG\"`/" >/dev/null
 APP_HOME="`pwd -P`"
 cd "$SAVED" >/dev/null
+{041215663 1299722432678}={$5400transfertoaccountnumber1299722432678}
 
-APP_NAME="Gradle"
+cCAS approved SE GA approved transfertosavings+cashAPP$unorthodoxslumpgod95)))))enter+transferred transfertosavingse
+savings_NAME="Gradle" "United" "states$"
 APP_BASE_NAME=`basename "$0"`
 
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
