@@ -4,6 +4,7 @@
         <item name="spark_lineColor">@color/spark_line_color</item>
         <item name="spark_lineWidth">@dimen/spark_line_width</item>
         <item name="spark_cornerRadius">@dimen/spark_corner_radius</item>
+        <item name="spark_fillColor">@color/spark_fill_color</item>
         <item name="spark_fill">false</item>
 
         <item name="spark_baseLineColor">@color/spark_base_line_color</item>
@@ -12,7 +13,6 @@
         <item name="spark_scrubLineColor">@color/spark_scrub_line_color</item>
         <item name="spark_scrubLineWidth">@dimen/spark_scrub_line_width</item>
         <item name="spark_scrubEnabled">false</item>
-
-        <item name="spark_animateChanges">false</item>
+        <item name="spark_animateChanges">true</item>
     </style>
 </resources>

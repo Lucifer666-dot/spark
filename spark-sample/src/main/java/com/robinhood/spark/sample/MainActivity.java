@@ -16,17 +16,28 @@
 
 package com.robinhood.spark.sample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.robinhood.spark.SparkAdapter;
 import com.robinhood.spark.SparkView;
+import com.robinhood.spark.animation.LineSparkAnimator;
+import com.robinhood.spark.animation.MorphSparkAnimator;
 
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+
+    private SparkView sparkView;
     private RandomizedAdapter adapter;
     private TextView scrubInfoTextView;
 
@@ -35,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SparkView sparkView = (SparkView) findViewById(R.id.sparkview);
+        sparkView = findViewById(R.id.sparkview);
 
         adapter = new RandomizedAdapter();
         sparkView.setAdapter(adapter);
@@ -50,16 +61,67 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        View button = findViewById(R.id.random_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.random_button).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 adapter.randomize();
             }
         });
 
-        scrubInfoTextView = (TextView) findViewById(R.id.scrub_info_textview);
+        ((CheckBox)findViewById(R.id.fillCheckBox)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if ( isChecked )
+                    sparkView.setFillType(SparkView.FillType.DOWN);
+                else
+                    sparkView.setFillType(SparkView.FillType.NONE);
+            }
+        });
+        
+        scrubInfoTextView = findViewById(R.id.scrub_info_textview);
+
+        // set select
+        Spinner animationSpinner = findViewById(R.id.animation_spinner);
+        animationSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.animations)));
+        animationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                switch(position) {
+                    case 1:
+                        LineSparkAnimator lineSparkAnimator = new LineSparkAnimator();
+                        lineSparkAnimator.setDuration(2500L);
+                        lineSparkAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+                        sparkView.setSparkAnimator(lineSparkAnimator);
+                        break;
+
+                    case 2:
+                        // set animator
+                        MorphSparkAnimator morphSparkAnimator = new MorphSparkAnimator();
+                        morphSparkAnimator.setDuration(2000L);
+                        morphSparkAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+                        sparkView.setSparkAnimator(morphSparkAnimator);
+                        break;
+
+                    default:
+                        sparkView.setSparkAnimator(null);
+                        break;
+                }
+
+                adapter.randomize();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                sparkView.setSparkAnimator(null);
+                adapter.randomize();
+            }
+        });
     }
+
 
     public static class RandomizedAdapter extends SparkAdapter {
         private final float[] yData;
@@ -83,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             return yData.length;
         }
 
+        @NonNull
         @Override
         public Object getItem(int index) {
             return yData[index];

@@ -18,39 +18,87 @@ package com.robinhood.spark;
 
 import android.database.DataSetObservable;
 import android.database.DataSetObserver;
+import android.graphics.RectF;
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 /**
- * A simple adapter class - evenly distributes your points along the x axis, does not
- * draw a base line, and has support for registering/notifying {@link DataSetObserver}s when
- * data is changed.
+ * A simple adapter class - evenly distributes your points along the x axis, does not draw a base
+ * line, and has support for registering/notifying {@link DataSetObserver}s when data is changed.
  */
 public abstract class SparkAdapter {
     private final DataSetObservable observable = new DataSetObservable();
 
     /**
-     * returns the number of points to be drawn
+     * @return the number of points to be drawn
      */
     public abstract int getCount();
 
     /**
-     * returns the object at the given index
+     * @return the object at the given index
      */
+    @NonNull
     public abstract Object getItem(int index);
 
     /**
-     * Gets the float representation of the X value of the point at the given index.
+     * @return the float representation of the X value of the point at the given index.
      */
     public float getX(int index) {
         return index;
     }
 
     /**
-     * Gets the float representation of the Y value of the point at the given index.
+     * @return the float representation of the Y value of the point at the given index.
      */
     public abstract float getY(int index);
 
     /**
-     * Return true if you wish to draw a "baseLine" - a horizontal line across the graph used
+     * Gets the float representation of the boundaries of the entire dataset. By default, this will
+     * be the min and max of the actual data points in the adapter. This can be overridden for
+     * custom behavior. When overriding, make sure to set RectF's values such that:
+     *
+     * <ul>
+     *     <li>left = the minimum X value</li>
+     *     <li>top = the minimum Y value</li>
+     *     <li>right = the maximum X value</li>
+     *     <li>bottom = the maximum Y value</li>
+     * </ul>
+     *
+     * @return a RectF of the bounds desired around this adapter's data.
+     */
+    @NonNull
+    public RectF getDataBounds() {
+        final int count = getCount();
+        final boolean hasBaseLine = hasBaseLine();
+
+        float minY = hasBaseLine ? getBaseLine() : Float.MAX_VALUE;
+        float maxY = hasBaseLine ? minY : -Float.MAX_VALUE;
+        float minX = Float.MAX_VALUE;
+        float maxX = -Float.MAX_VALUE;
+        for (int i = 0; i < count; i++) {
+            final float x = getX(i);
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+
+            final float y = getY(i);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+        }
+
+        // set values on the return object
+        return createRectF(minX, minY, maxX, maxY);
+    }
+
+    /**
+     * Hook for unit tests
+     */
+    @VisibleForTesting
+    RectF createRectF(float left, float top, float right, float bottom) {
+        return new RectF(left, top, right, bottom);
+    }
+
+    /**
+     * @return true if you wish to draw a "base line" - a horizontal line across the graph used
      * to compare the rest of the graph's points against.
      */
     public boolean hasBaseLine() {
@@ -58,7 +106,7 @@ public abstract class SparkAdapter {
     }
 
     /**
-     * Gets the float representation of the Y value of the desired baseLine.
+     * @return the float representation of the Y value of the desired baseLine.
      */
     public float getBaseLine() {
         return 0;

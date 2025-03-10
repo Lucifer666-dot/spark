@@ -1,0 +1,29 @@
+language: android
+
+android:
+  components:
+    - platform-tools
+    - tools
+    - android-26
+    - build-tools-26.0.3
+    - extra-android-m2repository
+
+script:
+  ./gradlew clean check --stacktrace
+
+jdk:
+  - oraclejdk8
+
+notifications:
+  email: false
+
+sudo: false
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle
+
+before_install:
+  - yes | sdkmanager "platforms;android-27"

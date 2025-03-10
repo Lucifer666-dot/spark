@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ScaleHelperUnitTest {
     private RectF contentRect;
@@ -16,7 +14,7 @@ public class ScaleHelperUnitTest {
     @Before
     public void setup() {
         // by default, all tests are on a canvas of 100 x 100
-        contentRect = getRectF(0, 0, 100, 100);
+        contentRect = TestAdapter.createMockRectF(0, 0, 100, 100);
         testAdapter = new TestAdapter();
     }
 
@@ -87,7 +85,7 @@ public class ScaleHelperUnitTest {
     @Test
     public void testNonuniformXPoints() {
         testAdapter.setYData(new float[] {0, 1, 2, 3, 4});
-        testAdapter.setxData(new float[] {0, 1, 2, 3, 100});
+        testAdapter.setXData(new float[] {0, 1, 2, 3, 100});
         SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
                 false);
 
@@ -122,49 +120,81 @@ public class ScaleHelperUnitTest {
         assertEquals(0f, y4);
     }
 
-    private RectF getRectF(float left, float top, float right, float bottom) {
-        RectF rectF = mock(RectF.class);
-        rectF.left = left;
-        rectF.top = top;
-        rectF.right = right;
-        rectF.bottom = bottom;
-        when(rectF.width()).thenReturn(right - left);
-        when(rectF.height()).thenReturn(bottom - top);
-        return rectF;
+    @Test
+    public void testNonWrappingDataBounds() {
+        testAdapter.setYData(new float[] {0, 50, 100});
+        // set bounds to 'zoom in' on the first two points
+        testAdapter.setDataBounds(0, 0, 1, 50);
+        SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
+                false);
+
+        // assert point 0 is bottom left (0, 100)
+        float x0 = scaleHelper.getX(testAdapter.getX(0));
+        float y0 = scaleHelper.getY(testAdapter.getY(0));
+        assertEquals(0f, x0);
+        assertEquals(100f, y0);
+
+        // assert point 1 is top right (100, 0)
+        float x1 = scaleHelper.getX(testAdapter.getX(1));
+        float y1 = scaleHelper.getY(testAdapter.getY(1));
+        assertEquals(100f, x1);
+        assertEquals(0f, y1);
+
+        // assert point 2 is outside our content rect, far top right (200, -100)
+        float x2 = scaleHelper.getX(testAdapter.getX(2));
+        float y2 = scaleHelper.getY(testAdapter.getY(2));
+        assertEquals(200f, x2);
+        assertEquals(-100f, y2);
     }
 
-    private static class TestAdapter extends SparkAdapter {
-        private float[] yData, xData;
-        private boolean evenlyDistributeXPoints = true;
+    @Test
+    public void testHorizontalLine() {
+        testAdapter.setYData(new float[] {25, 25, 25});
+        SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
+                false);
 
-        public void setYData(float[] yData) {
-            this.yData = yData;
-        }
+        // assert point 0 is left middle
+        float x0 = scaleHelper.getX(testAdapter.getX(0));
+        float y0 = scaleHelper.getY(testAdapter.getY(0));
+        assertEquals(0f, x0);
+        assertEquals(50f, y0);
 
-        public void setxData(float[] xData) {
-            this.xData = xData;
-        }
+        // assert point 1 is middle middle
+        float x1 = scaleHelper.getX(testAdapter.getX(1));
+        float y1 = scaleHelper.getY(testAdapter.getY(1));
+        assertEquals(50f, x1);
+        assertEquals(50f, y1);
 
-        @Override
-        public int getCount() {
-            return yData.length;
-        }
+        // assert point 2 is right middle
+        float x2 = scaleHelper.getX(testAdapter.getX(2));
+        float y2 = scaleHelper.getY(testAdapter.getY(2));
+        assertEquals(100f, x2);
+        assertEquals(50f, y2);
+    }
 
-        @Override
-        public Object getItem(int index) {
-            return yData[index];
-        }
+    @Test
+    public void testVerticalLine() {
+        testAdapter.setYData(new float[] {0, 50, 100});
+        testAdapter.setXData(new float[] {25, 25, 25});
+        SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
+                false);
 
-        @Override
-        public float getY(int index) {
-            return yData[index];
-        }
+        // assert point 0 is middle bottom
+        float x0 = scaleHelper.getX(testAdapter.getX(0));
+        float y0 = scaleHelper.getY(testAdapter.getY(0));
+        assertEquals(50f, x0);
+        assertEquals(100f, y0);
 
-        @Override
-        public float getX(int index) {
-            return  xData == null
-                    ? super.getX(index)
-                    : xData[index];
-        }
+        // assert point 1 is middle middle
+        float x1 = scaleHelper.getX(testAdapter.getX(1));
+        float y1 = scaleHelper.getY(testAdapter.getY(1));
+        assertEquals(50f, x1);
+        assertEquals(50f, y1);
+
+        // assert point 2 is middle top
+        float x2 = scaleHelper.getX(testAdapter.getX(2));
+        float y2 = scaleHelper.getY(testAdapter.getY(2));
+        assertEquals(50f, x2);
+        assertEquals(0f, y2);
     }
 }

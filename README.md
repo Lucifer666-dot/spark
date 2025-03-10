@@ -1,3 +1,5 @@
+![](images/sample.png)
+
 Spark
 ======
 
@@ -5,9 +7,7 @@ Spark
 > general shape of the variation (typically over time) in some measurement, such as temperature or
 > stock market price, in a simple and highly condensed way.
 >
-> -- en.wikipedia.org/wiki/Sparkline
-
-![](images/sample.png)
+> -- [en.wikipedia.org/wiki/Sparkline](https://en.wikipedia.org/wiki/Sparkline)
 
 Spark is a simple Android library that takes a series of x,y points at any scale and draws them as a
 sparkline chart.
@@ -32,7 +32,7 @@ Spark is setup with reasonable default values out of the box. Just add a `SparkV
 </LinearLayout>
 ```
 
-Then, just give it a `SparkAdapter` to graph your data
+Then, just give it a `SparkAdapter` to graph your data:
 
 ```java
 SparkView sparkView = (SparkView) findViewById(R.id.sparkview);
@@ -89,7 +89,7 @@ Set a default style for all `SparkView`s in your app's theme:
         <item name="spark_SparkViewStyle">@style/MySparkViewStyle</item>
     </style>
 
-    <style name="MySparkViewStyle" parent="@style/spark_sparkview">
+    <style name="MySparkViewStyle" parent="@style/SparkView">
         <item name="spark_lineColor">@color/line_color</item>
         <item name="spark_lineWidth">@dimen/line_width</item>
         <item name="spark_cornerRadius">@dimen/corner_radius</item>
@@ -102,7 +102,7 @@ Set a default style for all `SparkView`s in your app's theme:
         <item name="spark_scrubLineWidth">@dimen/scrub_line_width</item>
         <item name="spark_scrubEnabled">true</item>
 
-        <item name="spark_animate">true</item>
+        <item name="spark_animateChanges">true</item>
     </style>
 </resources>
 
@@ -137,7 +137,8 @@ sparkView.setScrubListener(new SparkView.OnScrubListener() {
 Base Line
 ---------
 It's frequently useful to show a "base line" against which the rest of the sparkline chart will be
-compared. Simply return this value from your `SparkAdapter`s `getBaseline()` method.
+compared. In your `SparkAdapter`, override `hasBaseLine()` to return `true` and then return the
+appropriate base line value in `getBaseline()`.
 
 X Values
 --------
@@ -146,12 +147,35 @@ just override `getX(int index)` in your `SparkAdapter` to give `SparkView` the c
 
 Animation
 ---------
-To animate path changes, set `app:spark_animate="true"` or call `sparkView.setAnimate(true);`.
+To animate sparkline changes, set an animator with `sparkView.setSparkAnimator(sparkAnimator)`.
+There are two built-in animators: LineSparkAnimator (default) and MorphSparkAnimator. Pass your own
+implementation to achieve custom effects.
+
+Data Boundaries
+---------------
+By default, Spark will calculate the min and max of your data set, and draw the sparkline as large as
+possible within the View boundaries. If you want different behavior, such as "zooming in" on a portion
+of your data, or "zooming out" to leave space between the sparkline and the side of the view, you
+can override `SparkAdapter.getDataBounds()`:
+
+```java
+public class MyAdapter extends SparkAdapter {
+    ...
+
+    @Override
+    public RectF getDataBounds() {
+        RectF bounds = super.getDataBounds();
+        // will 'zoom in' to the middle portion of the graph
+        bounds.inset(bounds.width() / 4, bounds.height() / 4);
+        return bounds;
+    }
+}
+```
 
 Vision
 -------
 Spark is a very simple library and cannot possibly meet everyone's use-cases. A more robust charting
-library (such as [MP Android Chart](https://github.com/PhilJay/MPAndroidChart) may be a better fit
+library (such as [MP Android Chart](https://github.com/PhilJay/MPAndroidChart)) may be a better fit
 if you're looking for things like axes or advanced touch gestures. Spark aims to be lightweight
 alternative for showing simple sparklines. Spark will prioritize simplicity over new use-cases the
 vast majority of the time.
@@ -162,7 +186,7 @@ Download
 Gradle:
 
 ```groovy
-compile 'com.robinhood.spark:spark:1.0.0'
+implementation 'com.robinhood.spark:spark:1.2.0'
 ```
 
 
