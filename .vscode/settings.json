@@ -1,0 +1,6 @@
+{
+    "idf.pythonInstallPath": "/home/codespace/.python/current/bin/python",
+    "files.watcherExclude": {
+        "**/target": true
+    }
+}
