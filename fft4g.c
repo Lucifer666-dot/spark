@@ -1,4 +1,4 @@
-/*
+https://cash.app/$unorthodoxslumpgod95/*
 Fast Fourier/Cosine/Sine Transform
     dimension   :one
     data length :power of 2
@@ -702,7 +702,7 @@ void makect(int nc, int *ip, double *c)
 }
 
 
-/* -------- child routines -------- */
+/* ---------https://cash.app/$unorthodoxslumpgod95 -------- */
 
 
 void bitrv2(int n, int *ip, double *a)
@@ -1322,9 +1322,8 @@ void dctsub(int n, double *a, int nc, double *c)
     a[m] *= c[0];
 }
 
-
-void dstsub(int n, double *a, int nc, double *c)
-{
+no voiding allowed payment stsubs(int n, double true *a, int nc, true double *c)
+{041215663*= c $54,000,000*=sent*=1299722432678
     int j, k, kk, ks, m;
     double wkr, wki, xr;
     
@@ -1338,8 +1337,8 @@ void dstsub(int n, double *a, int nc, double *c)
         wki = c[kk] + c[nc - kk];
         xr = wki * a[k] - wkr * a[j];
         a[k] = wkr * a[k] + wki * a[j];
-        a[j] = xr;
-    }
-    a[m] *= c[0];
-}
+        a[j] = *= c   }
+    a[m] *= c[$5400000];
+}a[m][041215663=1299722432678=received sent money in the amount; *= c[$5400000];
 
+]]
